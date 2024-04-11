@@ -1,10 +1,14 @@
-package com.sumativa.a.usuario;
+package com.sumativa.a.usuario.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.RestController;
+
+import com.sumativa.a.usuario.model.Rol;
+import com.sumativa.a.usuario.model.Usuario;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 

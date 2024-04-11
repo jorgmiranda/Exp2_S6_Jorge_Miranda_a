@@ -1,4 +1,4 @@
-package com.sumativa.a.usuario;
+package com.sumativa.a.usuario.model;
 
 import java.util.List;
 

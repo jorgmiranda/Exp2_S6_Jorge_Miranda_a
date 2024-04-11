@@ -1,4 +1,4 @@
-package com.sumativa.a.usuario;
+package com.sumativa.a.usuario.model;
 
 public class Rol {
     private int id;
