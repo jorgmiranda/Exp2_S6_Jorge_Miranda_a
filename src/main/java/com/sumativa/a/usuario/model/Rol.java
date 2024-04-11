@@ -26,10 +26,11 @@ public class Rol {
     private Usuario usuario;
 
 
-    public Rol(Long id, String nombreRol, String descripcion) {
+    public Rol(Long id, String nombreRol, String descripcion, Usuario usuario) {
         this.id = id;
         this.nombreRol = nombreRol;
         this.descripcion = descripcion;
+        this.usuario = usuario;
     }
 
 

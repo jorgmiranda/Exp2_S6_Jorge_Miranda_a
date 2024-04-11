@@ -18,6 +18,8 @@ public class Usuario {
     private Long id;
     @Column(name = "nombre_usuario")
     private String nombreCompleto;
+    @Column(name = "contrasena")
+    private String contrasena;
     @Column(name = "correo_usuario")
     private String correo;
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -31,12 +33,13 @@ public class Usuario {
     }
 
 
-    public Usuario(Long id, String nombreCompleto, String correo, List<Rol> roles, String direcciones) {
+    public Usuario(Long id, String nombreCompleto, String correo, List<Rol> roles, String direcciones, String contrasena) {
         this.id = id;
         this.nombreCompleto = nombreCompleto;
         this.correo = correo;
         this.roles = roles;
         this.direcciones = direcciones;
+        this.contrasena = contrasena;
     }
 
 
@@ -97,6 +100,16 @@ public class Usuario {
 
     public void setDirecciones(String[] direcciones) {
         this.direcciones = String.join(",", direcciones);
+    }
+
+
+    public String getContrasena() {
+        return contrasena;
+    }
+
+
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
     }
 
 
