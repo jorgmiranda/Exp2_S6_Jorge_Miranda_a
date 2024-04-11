@@ -56,7 +56,7 @@ public class RolController{
         return ResponseEntity.ok(rolCreado);
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     public ResponseEntity<Object> actualizarRol(@PathVariable Long id, @RequestBody Rol rol){
         Optional<Rol> rolbuscado = rolService.getRolById(id);
         if(rolbuscado.isEmpty()){
@@ -74,7 +74,7 @@ public class RolController{
         return ResponseEntity.ok(rol);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     public ResponseEntity<Object> eliminarRol(@PathVariable Long id){
         Optional<Rol> rolbuscado = rolService.getRolById(id);
         if(rolbuscado.isEmpty()){

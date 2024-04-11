@@ -20,7 +20,7 @@ public class Usuario {
     private String nombreCompleto;
     @Column(name = "contrasena")
     private String contrasena;
-    @Column(name = "correo_usuario")
+    @Column(name = "correo_usuario", unique = true)
     private String correo;
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Rol> roles;
