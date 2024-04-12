@@ -1,7 +1,6 @@
 package com.sumativa.a.usuario.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sumativa.a.usuario.model.Rol;
 import com.sumativa.a.usuario.model.Usuario;
+import com.sumativa.a.usuario.repository.UsuarioRepository;
 import com.sumativa.a.usuario.service.UsuarioService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
-    private static final Logger log = LoggerFactory.getLogger(RolController.class);
+    private static final Logger log = LoggerFactory.getLogger(UsuarioController.class);
 
     @Autowired
     private UsuarioService usuarioService;
@@ -77,8 +77,30 @@ public class UsuarioController {
         return usuarios.size();
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<Object> pruebaLogin(@RequestBody LoginControl login) {
+        List<Usuario> usuarios = usuarioService.getAllUsuario();
+        for (Usuario u : usuarios){
+            if(u.getCorreo().equals(login.getUsuario()) && u.getContrasena().equals(login.getContrasena())){
+                return ResponseEntity.ok(u);
+            }
+        }
+        log.error("Credenciales incorrectas ");
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new ErrorResponse("Credenciales incorrectas"));
+    }
+
     @PostMapping
     public ResponseEntity<Object> crearUsuario(@RequestBody Usuario usr){
+        //Valida que el correo sea unico
+        List<Usuario> listaUsuarios = usuarioService.getAllUsuario();
+        for(Usuario u : listaUsuarios){
+            log.info("Verifica si el correo ya existe en la bd");
+            if(usr.getCorreo().equals(u.getCorreo())){
+                log.error("Ya existe un usuario con el correo {} ", u.getCorreo());
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new ErrorResponse("Ya existe un usuario con el correo "+ u.getCorreo()));
+            }
+        }
+        log.info("Completa validación de correo");
         Usuario usrCreado = usuarioService.crearUsuario(usr);
         if(usrCreado == null){
             log.error("Error al crear el Usuario");
@@ -109,7 +131,7 @@ public class UsuarioController {
         //Valida que el correo sea unico
         List<Usuario> listaUsuarios = usuarioService.getAllUsuario();
         for(Usuario u : listaUsuarios){
-            if(usr.getCorreo() == u.getCorreo()){
+            if(usr.getCorreo().equals(u.getCorreo())){
                 log.error("Ya existe un usuario con el correo {} ", u.getCorreo());
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new ErrorResponse("Ya existe un usuario con el correo "+ u.getCorreo()));
             }
@@ -147,6 +169,27 @@ public class UsuarioController {
         public String getMessage(){
             return message;
         }
+        
+    }
+
+    static class LoginControl {
+        public String usuario;
+        public String contrasena;
+        
+        public String getUsuario() {
+            return usuario;
+        }
+        public void setUsuario(String usuario) {
+            this.usuario = usuario;
+        }
+        public String getContrasena() {
+            return contrasena;
+        }
+        public void setContrasena(String contrasena) {
+            this.contrasena = contrasena;
+        }
+
+        
         
     }
 

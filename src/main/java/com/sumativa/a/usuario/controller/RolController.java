@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sumativa.a.usuario.model.Rol;
+import com.sumativa.a.usuario.model.RolDTO;
+import com.sumativa.a.usuario.model.Usuario;
 import com.sumativa.a.usuario.service.RolService;
+import com.sumativa.a.usuario.service.UsuarioService;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +34,9 @@ public class RolController{
     @Autowired
     private RolService rolService;
 
+    @Autowired
+    private UsuarioService usuarioService;
+
     @GetMapping
     public List<Rol> getAllRoles() {
         return rolService.getAllRoles();
@@ -47,31 +53,70 @@ public class RolController{
     }
 
     @PostMapping
-    public ResponseEntity<Object> crearRol(@RequestBody Rol rol){
-        Rol rolCreado = rolService.crearRol(rol);
-        if(rolCreado == null){
+    public ResponseEntity<Object> crearRol(@RequestBody RolDTO rol){
+        //Se valida si el id esta vacio:
+        if(rol.getIdUsuario() == null){
+            log.error("El ID Usuario esta vacio");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Debe ingresar el ID usurio antes de crear un rol"));
+        }
+        //Se busca obtener el usuario si se proporciona un id
+        Optional<Usuario> buscarUsuario = usuarioService.getUsuarioById(rol.getIdUsuario());
+        if(buscarUsuario.isEmpty()){
+            log.error("No se encontro un Usuario con el ID {}", rol.getIdUsuario());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("No se encontro ningun Usuario con ese ID"));
+           
+        }
+        if(rol.getNombreRol().isEmpty()){
+            log.error("No se pueden definir un rol sin nombre");
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new ErrorResponse("El rol debe tener un nombre"));
+        }
+        
+        Rol rolcreado = new Rol();
+        rolcreado.setNombreRol(rol.getNombreRol());
+        rolcreado.setDescripcion(rol.getDescripcion());
+        rolcreado.setUsuario(buscarUsuario.get());
+
+        Rol r = rolService.crearRol(rolcreado);
+        if(r == null){
             log.error("Error al crear el rol");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Error al crear el rol"));
         }
-        return ResponseEntity.ok(rolCreado);
+        return ResponseEntity.ok(r);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> actualizarRol(@PathVariable Long id, @RequestBody Rol rol){
+    public ResponseEntity<Object> actualizarRol(@PathVariable Long id, @RequestBody RolDTO rol){
+        //Se valida si el idUsuario esta vacio:
+        if(rol.getIdUsuario() == null){
+            log.error("El ID Usuario esta vacio");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Debe ingresar el ID usurio antes de crear un rol"));
+        }
+
+        //Se busca obtener el usuario si se proporciona un id
+        Optional<Usuario> buscarUsuario = usuarioService.getUsuarioById(rol.getIdUsuario());
+        if(buscarUsuario.isEmpty()){
+            log.error("No se encontro un Usuario con el ID {}", rol.getIdUsuario());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("No se encontro ningun Usuario con ese ID"));
+           
+        }
+
         Optional<Rol> rolbuscado = rolService.getRolById(id);
         if(rolbuscado.isEmpty()){
             log.error("No se encontro ningun rol con ese ID {} ", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("No se encontro ningun rol con ese ID"));
-        }else{
-            if(rol.getNombreRol().isEmpty()){
-                log.error("No se pueden definir un rol sin nombre", id);
-                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new ErrorResponse("El rol debe tener un nombre"));
-            }else{
-                rolService.actualizarRol(id, rol);
-                rol.setId(id);
-            }
         }
-        return ResponseEntity.ok(rol);
+        if(rol.getNombreRol().isEmpty()){
+            log.error("No se pueden definir un rol sin nombre", id);
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new ErrorResponse("El rol debe tener un nombre"));
+        }
+
+        Rol r = new Rol();
+        r.setNombreRol(rol.getNombreRol());
+        r.setDescripcion(rol.getDescripcion());
+        r.setUsuario(buscarUsuario.get());
+                
+        Rol retorno = rolService.actualizarRol(id, r);
+        return ResponseEntity.ok(retorno);
     }
 
     @DeleteMapping("/{id}")

@@ -1,5 +1,7 @@
 package com.sumativa.a.usuario.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -23,8 +25,12 @@ public class Rol {
     private String descripcion;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario")
+    @JsonIgnore
     private Usuario usuario;
 
+    public Rol(){
+
+    }
 
     public Rol(Long id, String nombreRol, String descripcion, Usuario usuario) {
         this.id = id;
