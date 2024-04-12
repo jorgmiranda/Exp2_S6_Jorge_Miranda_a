@@ -1,6 +1,5 @@
 package com.sumativa.a.usuario.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sumativa.a.usuario.model.Rol;
 import com.sumativa.a.usuario.model.Usuario;
-import com.sumativa.a.usuario.repository.UsuarioRepository;
+import com.sumativa.a.usuario.service.RolService;
 import com.sumativa.a.usuario.service.UsuarioService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +30,10 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private RolService rolService;
+
     
     @GetMapping
     public List<Usuario> getUsuarios() {
@@ -106,6 +109,14 @@ public class UsuarioController {
             log.error("Error al crear el Usuario");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Error al crear el Usuario"));
         }
+        if(usrCreado.getRoles()!= null){
+            for(Rol r : usrCreado.getRoles()){
+                r.setUsuario(usrCreado);
+                rolService.actualizarRol(r.getId(), r);
+            }
+        }
+
+
         return ResponseEntity.ok(usrCreado);
     }
 
@@ -150,8 +161,14 @@ public class UsuarioController {
             log.error("El correo es obligatorio." );
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new ErrorResponse("El correo es obligatorio "));
         }
+        //Preservar roles
+        Usuario usuarioActual = usrBuscado.get();
+        usuarioActual.setNombreCompleto(usr.getNombreCompleto());
+        usuarioActual.setContrasena(usr.getContrasena());
+        usuarioActual.setCorreo(usr.getCorreo());
+        usuarioActual.setDirecciones(usr.getDirecciones());
 
-        usuarioService.actualizarUsuario(id, usr);
+        usuarioService.actualizarUsuario(id, usuarioActual);
         usr.setId(id);
         return ResponseEntity.ok(usr);
     
