@@ -94,6 +94,23 @@ public class UsuarioController {
 
     @PostMapping
     public ResponseEntity<Object> crearUsuario(@RequestBody Usuario usr){
+        // Validaciones de campo
+        if(usr.getNombreCompleto() == null){
+            log.error("El nombre del usuario es obligatorio." );
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new ErrorResponse("El nombre del usuario es obligatorio "));
+        }
+
+        if(usr.getContrasena() == null){
+            log.error("La constraseña es obligatorio." );
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new ErrorResponse("La constraseña es obligatoria "));
+        }
+
+        if(usr.getCorreo() == null){
+            log.error("El correo es obligatorio." );
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new ErrorResponse("El correo es obligatorio "));
+        }
+        
+        
         //Valida que el correo sea unico
         List<Usuario> listaUsuarios = usuarioService.getAllUsuario();
         for(Usuario u : listaUsuarios){
@@ -139,6 +156,21 @@ public class UsuarioController {
             log.error("No se encontro ningun Usuario con ese ID {} ", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("No se encontro ningun Usuario con ese ID"));
         }
+        if(usr.getNombreCompleto() == null){
+            log.error("El nombre del usuario es obligatorio." );
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new ErrorResponse("El nombre del usuario es obligatorio "));
+        }
+
+        if(usr.getContrasena() == null){
+            log.error("La constraseña es obligatorio." );
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new ErrorResponse("La constraseña es obligatoria "));
+        }
+
+        if(usr.getCorreo() == null){
+            log.error("El correo es obligatorio." );
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new ErrorResponse("El correo es obligatorio "));
+        }
+
         //Valida que el correo sea unico
         List<Usuario> listaUsuarios = usuarioService.getAllUsuario();
         for(Usuario u : listaUsuarios){
@@ -146,20 +178,6 @@ public class UsuarioController {
                 log.error("Ya existe un usuario con el correo {} ", u.getCorreo());
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new ErrorResponse("Ya existe un usuario con el correo "+ u.getCorreo()));
             }
-        }
-        if(usr.getNombreCompleto().isEmpty()){
-            log.error("El nombre del usuario es obligatorio." );
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new ErrorResponse("El nombre del usuario es obligatorio "));
-        }
-
-        if(usr.getContrasena().isEmpty()){
-            log.error("La constraseña es obligatorio." );
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new ErrorResponse("La constraseña es obligatoria "));
-        }
-
-        if(usr.getCorreo().isEmpty()){
-            log.error("El correo es obligatorio." );
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new ErrorResponse("El correo es obligatorio "));
         }
         //Preservar roles
         Usuario usuarioActual = usrBuscado.get();
