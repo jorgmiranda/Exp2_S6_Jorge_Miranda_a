@@ -66,7 +66,7 @@ public class RolController{
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("No se encontro ningun Usuario con ese ID"));
            
         }
-        if(rol.getNombreRol().isEmpty()){
+        if(rol.getNombreRol() == null){
             log.error("No se pueden definir un rol sin nombre");
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new ErrorResponse("El rol debe tener un nombre"));
         }
@@ -105,7 +105,7 @@ public class RolController{
             log.error("No se encontro ningun rol con ese ID {} ", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("No se encontro ningun rol con ese ID"));
         }
-        if(rol.getNombreRol().isEmpty()){
+        if(rol.getNombreRol() == null){
             log.error("No se pueden definir un rol sin nombre", id);
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new ErrorResponse("El rol debe tener un nombre"));
         }
